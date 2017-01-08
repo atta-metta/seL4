@@ -193,10 +193,10 @@ CPPFLAGS += ${CONFIG_KERNEL_EXTRA_CPPFLAGS}
 endif
 endif
 
-CPP = ${TOOLPREFIX}cpp
-AS = ${TOOLPREFIX}as
-LD = ${TOOLPREFIX}ld
 STRIP = ${TOOLPREFIX}strip
+CPP ?= ${TOOLPREFIX}cpp
+AS ?= ${TOOLPREFIX}as
+LD ?= ${TOOLPREFIX}ld.lld
 BF_GEN_PATH = ${SOURCE_ROOT}/tools/bitfield_gen.py
 CHANGED = ${SOURCE_ROOT}/tools/changed.sh
 CPP_GEN = ${SOURCE_ROOT}/tools/cpp_gen.sh
