@@ -292,8 +292,8 @@ DEFINE  += -DCONFIG_PRINTING
 DEFINES += -DCONFIG_USER_STACK_TRACE_LENGTH=1
 endif
 ifeq (${ARCH}, arm)
-CFLAGS += -mtune=${CPU} -marm -march=${ARMV}
-ASFLAGS += -Wa,-mcpu=${CPU} -Wa,-march=${ARMV}
+CFLAGS += -target armv7a-unknown-none-elf -mcpu=${CPU} -mfloat-abi=hard
+ASFLAGS += -target armv7a-unknown-none-elf -mcpu=${CPU} -mfloat-abi=hard
 DEFINES += -D$(shell echo ${ARMV}|tr [:lower:] [:upper:]|tr - _)
 DEFINES += -DARCH_ARM
 ifeq (${SEL4_ARCH}, aarch32)
