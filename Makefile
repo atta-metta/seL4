@@ -193,7 +193,6 @@ CPPFLAGS += ${CONFIG_KERNEL_EXTRA_CPPFLAGS}
 endif
 endif
 
-STRIP = ${TOOLPREFIX}strip
 CPP ?= ${TOOLPREFIX}cpp
 AS ?= ${TOOLPREFIX}as
 LD ?= ${TOOLPREFIX}ld.lld
@@ -410,8 +409,7 @@ WARNINGS = all error strict-prototypes missing-prototypes nested-externs \
 CFLAGS += --std=c99 -nostdlib -nostdinc -ffreestanding \
 	${WARNINGS:%=-W%} ${INCLUDES}
 CPPFLAGS += -nostdinc
-LDFLAGS += -nostdlib -nostdinc
-LDFLAGS += -Wl,--build-id=none
+LDFLAGS += -nostdlib --strip-all
 ASFLAGS += ${INCLUDES}
 
 # Compiler optimisation level. Note that you can't build the kernel with
@@ -546,7 +544,7 @@ MAKEFILES := $(shell find ${SOURCE_ROOT} -name "Makefile")
 ### Top-level targets
 ############################################################
 
-all: kernel.elf kernel.elf.strip
+all: kernel.elf
 
 theories: ${THEORIES}
 
@@ -624,7 +622,8 @@ linker.lds_pp: ${LINKER_SCRIPT}
 
 kernel.elf: ${OBJECTS} linker.lds_pp
 	@echo " [LD] $@"
-	$(Q)${CHANGED} $@ ${CC} ${LDFLAGS} -T linker.lds_pp -Wl,-n \
+	#-Wl,-n
+	$(Q)${CHANGED} $@ ${LD} ${LDFLAGS} --script linker.lds_pp  \
 	     -o $@ ${OBJECTS}
 
 autoconf.h: include/plat/${PLAT}/autoconf.h
@@ -633,10 +632,6 @@ autoconf.h: include/plat/${PLAT}/autoconf.h
 ############################################################
 ### Pattern rules
 ############################################################
-
-%.elf.strip: %.elf | ${DIRECTORIES}
-	@echo " [STRIP] $@"
-	$(Q)${STRIP} -o $@ $<
 
 %.o: %.s_pp | ${DIRECTORIES}
 	@echo " [AS] $@"
@@ -734,7 +729,7 @@ endif
 ### Utility targets
 ############################################################
 
-CLEANTARGETS = kernel.elf kernel.elf.strip ${GENHEADERS} ${OBJECTS} autoconf.h \
+CLEANTARGETS = kernel.elf ${GENHEADERS} ${OBJECTS} autoconf.h \
   parser.out parsetab.py \
   kernel_final.s kernel_final.c kernel_all.c kernel_all.c_pp \
   ${PPFILES} ${THEORIES} c-parser.log c-parser-all.log \
